@@ -290,9 +290,22 @@ def index():
         if uzmanlik:
             query = query.filter(Kullanici.uzmanlik_alani == uzmanlik.isim)
     
-    tamirciler = query.all()
+    # Pagination ekle
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
     
-    return render_template('index.html', form=form, tamirciler=tamirciler)
+    pagination = query.paginate(
+        page=page, 
+        per_page=per_page, 
+        error_out=False
+    )
+    
+    tamirciler = pagination.items
+    
+    return render_template('index.html', 
+                           form=form, 
+                           tamirciler=tamirciler,
+                           pagination=pagination)
 
 @tamircim.route('/get_districts/<int:sehir_id>')
 def ilceleri_getir(sehir_id):
