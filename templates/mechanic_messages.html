@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Mesajlarım{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Başlık -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Mesajlarım</h1>
+            <p class="mt-2 text-sm text-gray-600">Müşterilerinizle olan görüşmelerinizi buradan yönetebilirsiniz.</p>
+        </div>
+        
+        {% if musteriler %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for musteri in musteriler %}
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200">
+                        <!-- Müşteri Başlığı -->
+                        <div class="px-6 py-4 bg-orange-700 text-white">
+                            <h3 class="text-lg font-semibold">{{ musteri.isim }}</h3>
+                            {% if musteri.okunmamis > 0 %}
+                                <span class="px-2 py-1 bg-white text-orange-700 text-xs rounded-full font-semibold ml-2">
+                                    {{ musteri.okunmamis }} yeni
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Mesaj İçeriği -->
+                        <div class="p-6">
+                            <div class="space-y-3">
+                                <div>
+                                    <span class="text-sm font-medium text-gray-500">Son Mesaj:</span>
+                                    {% if musteri.son_mesaj %}
+                                        <p class="mt-1 text-gray-900">{{ musteri.son_mesaj.icerik|truncate(100) }}</p>
+                                        <p class="mt-1 text-xs text-gray-500">{{ musteri.son_mesaj.zaman_d|datetime('%d.%m.%Y %H:%M') }}</p>
+                                    {% else %}
+                                        <p class="mt-1 text-gray-500 italic">Henüz mesaj yok</p>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Görüşme Butonu -->
+                                <div class="pt-4">
+                                    <a href="{{ url_for('view_conversation', alici_id=musteri.id) }}" 
+                                       class="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                        Görüşmeye Git
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Boş Durum -->
+            <div class="bg-white rounded-lg shadow-sm p-8 text-center">
+                <div class="max-w-md mx-auto">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 mb-4">
+                        <i class="fas fa-envelope text-3xl text-orange-700"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Henüz mesajınız bulunmuyor</h3>
+                    <p class="text-gray-600 mb-6">Müşteriler size mesaj gönderdiğinde burada görünecek.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

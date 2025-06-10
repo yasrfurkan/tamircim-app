@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Tamirci Paneli{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Hoş Geldiniz, {{ session['isim'] }}</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Yaklaşan randevular -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h5 class="text-lg font-medium text-gray-900">Yaklaşan Randevular</h5>
+            </div>
+            <div class="p-6">
+                {% if randevular %}
+                    <div class="space-y-4">
+                        {% for randevu in randevular %}
+                            <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                                <div class="flex justify-between items-start">
+                                    <h5 class="text-lg font-medium text-gray-900">{{ randevu.customer.isim }}</h5>
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full 
+                                        {% if randevu.durum == 'bekliyor' %}bg-yellow-100 text-yellow-800
+                                        {% elif randevu.durum == 'onaylandı' %}bg-green-100 text-green-800
+                                        {% elif randevu.durum == 'iptal' %}bg-red-100 text-red-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ randevu.durum }}
+                                    </span>
+                                </div>
+                                <p class="mt-2 text-gray-600">{{ randevu.servis_aciklama|truncate(100) }}</p>
+                                <p class="mt-1 text-sm text-gray-500">{{ randevu.randevu_date|datetime }}</p>
+                                
+                                {% if randevu.durum == 'bekliyor' %}
+                                    <div class="mt-3 space-x-2">
+                                        <a href="{{ url_for('randevu_guncelle', appointment_id=randevu.id, action='onay') }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                                           onclick="return confirmAction('Bu randevuyu onaylamak istediğinize emin misiniz?')">
+                                            Onayla
+                                        </a>
+                                        <a href="{{ url_for('randevu_guncelle', appointment_id=randevu.id, action='iptal') }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+                                           onclick="return confirmAction('Bu randevuyu iptal etmek istediğinize emin misiniz?')">
+                                            İptal Et
+                                        </a>
+                                    </div>
+                                {% elif randevu.durum == 'onaylandı' %}
+                                    <div class="mt-3">
+                                        <a href="{{ url_for('randevu_guncelle', appointment_id=randevu.id, action='tamamla') }}" 
+                                           class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                                           onclick="return confirmAction('Bu randevuyu tamamlandı olarak işaretlemek istediğinize emin misiniz?')">
+                                            Tamamlandı
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('tamirci_randevular') }}" class="inline-flex items-center px-4 py-2 border border-orange-500 text-sm font-medium rounded-md text-orange-500 hover:bg-orange-50">
+                            Tüm Randevuları Gör
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-calendar-alt text-4xl text-gray-400 mb-4"></i>
+                        <h5 class="text-lg font-medium text-gray-900 mb-2">Henüz randevunuz yok</h5>
+                        <p class="text-gray-500">Müşterileriniz randevu aldığında burada görünecek.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Son mesajlar -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h5 class="text-lg font-medium text-gray-900">Son Mesajlar</h5>
+            </div>
+            <div class="p-6">
+                {% if mesajlar %}
+                    <div class="space-y-4">
+                        {% for mesaj in mesajlar %}
+                            <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                                <div class="flex justify-between items-start">
+                                    <h5 class="text-lg font-medium text-gray-900">Müşteri: {{ mesaj.sender.isim }}</h5>
+                                    <span class="text-sm text-gray-500">{{ mesaj.zaman_d|datetime('%H:%M') }}</span>
+                                </div>
+                                <p class="mt-2 text-gray-600">{{ mesaj.icerik|truncate(50) }}</p>
+                                <a href="{{ url_for('view_conversation', alici_id=mesaj.gonderici_id) }}" 
+                                   class="mt-3 inline-flex items-center px-3 py-1 border border-orange-700 text-sm font-medium rounded-md text-orange-500 hover:bg-orange-50">
+                                    Görüşmeye Git
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ url_for('tamirci_mesajları') }}" class="inline-flex items-center px-4 py-2 border border-orange-500 text-sm font-medium rounded-md text-orange-500 hover:bg-orange-50">
+                            Tüm Mesajları Gör
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <i class="fas fa-envelope text-4xl text-gray-400 mb-4"></i>
+                        <h5 class="text-lg font-medium text-gray-900 mb-2">Henüz mesajınız yok</h5>
+                        <p class="text-gray-500">Müşteriler mesaj gönderdiğinde burada görünecek.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hızlı Erişim -->
+    <div class="mt-6">
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h5 class="text-lg font-medium text-gray-900">Hızlı Erişim</h5>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="{{ url_for('tamirci_randevular') }}" class="group text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 group-hover:bg-orange-100 transition-colors mb-3">
+                            <i class="fas fa-calendar-alt text-2xl text-orange-600"></i>
+                        </div>
+                        <p class="text-gray-600 group-hover:text-orange-600">Randevularım</p>
+                    </a>
+                    <a href="{{ url_for('tamirci_mesajları') }}" class="group text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 group-hover:bg-orange-100 transition-colors mb-3">
+                            <i class="fas fa-envelope text-2xl text-orange-600"></i>
+                        </div>
+                        <p class="text-gray-600 group-hover:text-orange-600">Mesajlarım</p>
+                    </a>
+                    <a href="{{ url_for('cikis') }}" class="group text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 group-hover:bg-orange-100 transition-colors mb-3">
+                            <i class="fas fa-sign-out-alt text-2xl text-orange-600"></i>
+                        </div>
+                        <p class="text-gray-600 group-hover:text-orange-600">Çıkış Yap</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmAction(message) {
+        return confirm(message);
+    }
+</script>
+{% endblock %}

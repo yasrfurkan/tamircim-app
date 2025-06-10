@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Randevu Al{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <!-- Başlık -->
+            <div class="px-6 py-4 bg-orange-700 text-white">
+                <h2 class="text-xl font-semibold">{{ tamirci.isim }} ile Randevu Al</h2>
+                <p class="text-sm opacity-75">{{ tamirci.uzmanlik_alani }} uzmanı</p>
+            </div>
+            
+            <!-- İçerik -->
+            <div class="p-6">
+                <!-- Tamirci Bilgileri -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg flex items-start">
+                    <div class="mr-4 bg-orange-100 rounded-full p-3 text-orange-700">
+                        <i class="fas fa-tools text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-900">Tamirci Bilgileri</h3>
+                        <p class="text-gray-600 mt-1">{{ tamirci.adres }}</p>
+                        <p class="text-gray-600">{{ tamirci.ilce }}, {{ tamirci.sehir }}</p>
+                        <p class="text-gray-600 mt-1">{{ tamirci.telefon }}</p>
+                    </div>
+                </div>
+                
+                <!-- Randevu Formu -->
+                <form method="POST" action="{{ url_for('randevu_olustur', tamirci_id=tamirci.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label for="randevu_date" class="block text-sm font-medium text-gray-700 mb-1">Randevu Tarihi ve Saati</label>
+                        
+                        <!-- Tarih seçici ve saatler için özel UI -->
+                        <div class="border border-gray-300 rounded-md p-4 bg-white">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Tarih Seçici (Sol taraf) -->
+                                <div>
+                                    <h3 class="font-medium text-gray-900 mb-2">Bir Tarih Seçin</h3>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <button type="button" id="prevMonth" class="text-gray-600 hover:text-gray-900">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <div id="currentMonth" class="text-gray-900 font-medium"></div>
+                                        <button type="button" id="nextMonth" class="text-gray-600 hover:text-gray-900">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <div class="grid grid-cols-7 gap-1 text-center">
+                                        <div class="text-xs font-medium text-gray-500">PZT</div>
+                                        <div class="text-xs font-medium text-gray-500">SAL</div>
+                                        <div class="text-xs font-medium text-gray-500">ÇAR</div>
+                                        <div class="text-xs font-medium text-gray-500">PER</div>
+                                        <div class="text-xs font-medium text-gray-500">CUM</div>
+                                        <div class="text-xs font-medium text-gray-500">CMT</div>
+                                        <div class="text-xs font-medium text-gray-500">PZR</div>
+                                    </div>
+                                    <div id="calendarDays" class="grid grid-cols-7 gap-1 mt-1"></div>
+                                </div>
+                                
+                                <!-- Saat Seçici (Sağ taraf) -->
+                                <div>
+                                    <h3 class="font-medium text-gray-900 mb-2">Bir Saat Seçin</h3>
+                                    <div id="selectedDate" class="text-sm text-gray-600 mb-2"></div>
+                                    <div id="timeSlots" class="grid grid-cols-1 gap-2">
+                                        <!-- JavaScript ile doldurulacak saat dilimleri -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Gizli input - form gönderimi için -->
+                        {{ form.randevu_date(id="randevu_date_input", type="hidden") }}
+                        
+                        {% for error in form.randevu_date.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                        <p class="mt-1 text-xs text-gray-500">Randevular 30 dakikalık dilimler halinde alınmaktadır.</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="arac_detay" class="block text-sm font-medium text-gray-700 mb-1">Araç Bilgileri</label>
+                        {{ form.arac_detay(class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500", placeholder="Marka, model, yıl ve diğer araç detaylarını girin") }}
+                        {% for error in form.arac_detay.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="servis_aciklama" class="block text-sm font-medium text-gray-700 mb-1">Servis Açıklaması</label>
+                        {{ form.servis_aciklama(class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500", rows=4, placeholder="Araç sorununuzu ve almak istediğiniz hizmeti detaylı olarak açıklayın") }}
+                        {% for error in form.servis_aciklama.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <a href="{{ url_for('tamirci_profil', tamirci_id=tamirci.id) }}"
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                            İptal
+                        </a>
+                        {{ form.submit(class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-700 hover:bg-orange-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date();
+        let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
+        let selectedDate = null;
+        let selectedTime = null;
+        
+        const currentMonthElement = document.getElementById('currentMonth');
+        const calendarDaysElement = document.getElementById('calendarDays');
+        const selectedDateElement = document.getElementById('selectedDate');
+        const timeSlotsElement = document.getElementById('timeSlots');
+        const dateInputElement = document.getElementById('randevu_date_input');
+        
+        // Ay isimleri - Türkçe
+        const monthNames = [
+            'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+            'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+        ];
+        
+        // Önceki ay butonuna tıklama
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        });
+        
+        // Sonraki ay butonuna tıklama
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        });
+        
+        // Takvimi oluştur
+        function renderCalendar() {
+            currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            calendarDaysElement.innerHTML = '';
+            
+            // Ayın ilk gününü ve son gününü bul
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            
+            // Ayın ilk gününün haftanın hangi günü olduğunu bul (0: Pazar, 1: Pazartesi, ..., 6: Cumartesi)
+            let firstDayOfWeek = firstDay.getDay();
+            if (firstDayOfWeek === 0) firstDayOfWeek = 7; // Pazar günü 0 yerine 7 olarak kabul et (Pazartesi başlangıç)
+            
+            // Önceki ayın günlerini oluştur (gri renkli)
+            for (let i = 1; i < firstDayOfWeek; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'h-8 w-8 flex items-center justify-center text-gray-400';
+                const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+                dayElement.textContent = prevMonthLastDay - (firstDayOfWeek - i - 1);
+                calendarDaysElement.appendChild(dayElement);
+            }
+            
+            // Mevcut ayın günlerini oluştur
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const dayElement = document.createElement('div');
+                
+                // Tarih sınıfını belirle (bugün, geçmiş, gelecek)
+                if (date < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+                    // Geçmiş tarihler tıklanamaz
+                    dayElement.className = 'h-8 w-8 flex items-center justify-center text-gray-400';
+                } else {
+                    // Gelecek tarihler seçilebilir
+                    dayElement.className = 'h-8 w-8 flex items-center justify-center rounded-full cursor-pointer hover:bg-blue-100';
+                    
+                    // Bugün ise özel stil
+                    if (date.toDateString() === today.toDateString()) {
+                        dayElement.className += ' bg-blue-50 border border-blue-200';
+                    }
+                    
+                    // Seçili gün ise özel stil
+                    if (selectedDate && date.toDateString() === selectedDate.toDateString()) {
+                        dayElement.className = 'h-8 w-8 flex items-center justify-center rounded-full cursor-pointer bg-blue-600 text-white';
+                    }
+                    
+                    // Tıklama olayı
+                    dayElement.addEventListener('click', function() {
+                        selectedDate = date;
+                        renderCalendar(); // Takvimi güncelle
+                        renderTimeSlots(); // Saat dilimlerini güncelle
+                    });
+                }
+                
+                dayElement.textContent = day;
+                calendarDaysElement.appendChild(dayElement);
+            }
+            
+            // Sonraki ayın günlerini oluştur (gri renkli)
+            const totalCells = 42; // 6 satır x 7 sütun
+            const filledCells = firstDayOfWeek - 1 + lastDay.getDate();
+            for (let i = 1; i <= totalCells - filledCells; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'h-8 w-8 flex items-center justify-center text-gray-400';
+                dayElement.textContent = i;
+                calendarDaysElement.appendChild(dayElement);
+            }
+        }
+        
+        // Saat dilimlerini oluştur
+        function renderTimeSlots() {
+            // Seçili tarihi Türkçe formatla göster
+            if (selectedDate) {
+                const options = { weekday: 'long', day: 'numeric', month: 'long' };
+                const formattedDate = selectedDate.toLocaleDateString('tr-TR', options);
+                selectedDateElement.textContent = formattedDate;
+                
+                // Saat dilimlerini temizle
+                timeSlotsElement.innerHTML = '';
+                
+                // İş saatleri: 09:00 - 18:00, yarım saatlik dilimler
+                const startHour = 9;
+                const endHour = 18;
+                
+                for (let hour = startHour; hour < endHour; hour++) {
+                    // Tam saat
+                    createTimeSlot(hour, 0);
+                    
+                    // Yarım saat
+                    createTimeSlot(hour, 30);
+                }
+            } else {
+                selectedDateElement.textContent = 'Lütfen önce bir tarih seçin';
+                timeSlotsElement.innerHTML = '';
+            }
+        }
+        
+        // Bir saat dilimi oluştur
+        function createTimeSlot(hour, minute) {
+            // Saat formatını oluştur (09:00 şeklinde)
+            const formattedHour = hour.toString().padStart(2, '0');
+            const formattedMinute = minute.toString().padStart(2, '0');
+            const timeString = `${formattedHour}:${formattedMinute}`;
+            
+            // Düğme oluşturmak yerine div kullanıyoruz
+            const timeSlot = document.createElement('div');
+            timeSlot.textContent = timeString;
+            timeSlot.className = 'py-2 px-4 border border-gray-300 rounded-md text-center hover:bg-blue-50 cursor-pointer';
+            
+            // Seçili saat ise özel stil
+            if (selectedTime === timeString) {
+                timeSlot.className = 'py-2 px-4 border border-transparent rounded-md text-center bg-blue-600 text-white cursor-pointer';
+            }
+            
+            // Tıklama olayı
+            timeSlot.addEventListener('click', function(event) {
+                event.preventDefault(); // Olası form gönderimini engelle
+                console.log('Saat seçildi:', timeString);
+                selectedTime = timeString;
+                updateSelectedDateTime();
+                renderTimeSlots(); // Saat dilimlerini güncelle
+            });
+            
+            timeSlotsElement.appendChild(timeSlot);
+        }
+        
+        // Seçilen tarih ve saati form input'una yaz
+        function updateSelectedDateTime() {
+            if (selectedDate && selectedTime) {
+                const [hours, minutes] = selectedTime.split(':');
+                
+                // Saat bilgisini manuel olarak formatla
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Ay 0-tabanlı
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                
+                // Saat diliminden bağımsız manuel formatlama (YYYY-MM-DDTHH:MM formatı)
+                const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                
+                console.log("Seçilen tarih/saat:", formattedDateTime);
+                dateInputElement.value = formattedDateTime;
+                
+                // "Randevu Al" butonunu etkinleştir
+                const submitButton = document.querySelector('input[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = false;
+                }
+            }
+        }
+        
+        // Başlangıçta takvimi ve saat dilimlerini göster
+        renderCalendar();
+        renderTimeSlots();
+        
+        // "Randevu Al" butonunu devre dışı bırak (bir tarih ve saat seçilene kadar)
+        const submitButton = document.querySelector('input[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+    });
+</script>
+{% endblock %}

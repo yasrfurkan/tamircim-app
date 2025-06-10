@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Tamirci Profili{% endblock %}
+
+{% block content %}
+<div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="shadow-lg p-4 bg-white rounded-lg">
+        <div class="flex max-lg:flex-col justify-between">
+            <div class="lg:w-1/3">
+                <div class="card-header bg-orange-700 p-4 rounded-t-lg">
+                    <svg class="rounded-lg w-full h-48" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100%" height="100%" fill="#f97316" />
+                        <circle cx="200" cy="70" r="40" fill="white" />
+                        <path d="M200,120 C160,120 130,150 130,190 L270,190 C270,150 240,120 200,120 Z" fill="white" />
+                    </svg>
+                    <h4 class="text-center font-bold text-xl mt-2 text-white">{{ tamirci.isim }}</h4>
+                    
+                    {% if tamirci.puan_sayisi > 0 %}
+                        <div class="flex justify-center items-center mt-2">
+                            <div class="flex items-center">
+                                {% for i in range(1, 6) %}
+                                    {% if i <= tamirci.ortalama_puan %}
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                    {% elif i <= tamirci.ortalama_puan + 0.5 %}
+                                        <i class="fas fa-star-half-alt text-yellow-400"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-yellow-400"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="ml-2 text-white">({{ tamirci.puan_sayisi }} değerlendirme)</span>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if 'kullanici_id' in session and session['kullanici_tipi'] == 'customer' %}
+                    <div class="flex gap-4 py-4 justify-center">
+                        <a href="{{ url_for('randevu_olustur', tamirci_id=tamirci.id) }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-700 hover:bg-orange-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                            <i class="fas fa-calendar-plus mr-2"></i> Randevu Al
+                        </a>
+                        <a href="{{ url_for('view_conversation', alici_id=tamirci.id) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                            <i class="fas fa-comments mr-2"></i> Mesaj Gönder
+                        </a>
+                    </div>
+                {% elif 'kullanici_id' not in session %}
+                    <div class="bg-blue-50 p-4 border-l-4 border-blue-500 mt-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-blue-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    Randevu alabilmek veya mesaj gönderebilmek için lütfen 
+                                    <a href="{{ url_for('login') }}" class="font-medium underline text-blue-700 hover:text-blue-600">giriş yapın</a> veya 
+                                    <a href="{{ url_for('kayit_musteri') }}" class="font-medium underline text-blue-700 hover:text-blue-600">müşteri olarak kaydolun</a>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="lg:w-2/3 lg:pl-10">
+                <div class="card-body">
+                    <div class="row">
+                        <div>
+                            <h5 class="mb-3 text-center text-xl font-medium text-gray-900 lg:py-2">Tamirci Bilgileri</h5>
+                            
+                            <div class="mb-3 lg:w-[400px]">
+                                <p class="mb-1"><strong><i class="fas fa-tools mr-2 text-orange-700"></i> Uzmanlık Alanı</strong></p>
+                                <p>{{ tamirci.uzmanlik_alani }}</p>
+                                <hr class="mt-3">
+                            </div>
+                            
+                            <div class="mb-3 lg:w-[400px]">
+                                <p class="mb-1"><strong><i class="fas fa-map-marker-alt mr-2 text-orange-700"></i> Adres</strong></p>
+                                <p>{{ tamirci.adres }}</p>
+                                <p>{{ tamirci.ilce }}, {{ tamirci.sehir }}</p>
+                                <hr class="mt-3">
+                            </div>
+                            
+                            <div class="mb-3 lg:w-[400px]">
+                                <p class="mb-1"><strong><i class="fas fa-phone mr-2 text-orange-700"></i> İletişim</strong></p>
+                                <p>{{ tamirci.telefon }}</p>
+                                <hr class="mt-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="py-3 pl-0 lg:pl-10">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="text-center text-lg font-medium text-gray-900">Hızlı İletişim</h5>
+                        </div>
+                        <div class="card-body py-3">
+                            <div class="mb-4">
+                                <h5 class="mb-0 font-medium">Telefon</h5>
+                                <div class="flex justify-between items-center py-2">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-phone text-orange-700 mr-2"></i> 
+                                        <span>{{ tamirci.telefon }}</span>
+                                    </div>
+                                </div>
+                                <hr class="mt-3">
+                            </div>
+                            
+                            <div>
+                                <h5 class="mb-0 font-medium">Konum</h5>
+                                <div class="mt-2">
+                                    <p><i class="fas fa-map-marker-alt text-orange-700 mr-2"></i> {{ tamirci.adres }}</p>
+                                    <p>{{ tamirci.ilce }}, {{ tamirci.sehir }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Değerlendirmeler Bölümü -->
+        {% if degerlendirmeler %}
+            <div class="mt-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Değerlendirmeler</h2>
+                
+                <div class="space-y-6">
+                    {% for degerlendirme in degerlendirmeler %}
+                        <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center space-x-3">
+                                    <div class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-orange-100">
+                                        <span class="text-sm font-medium text-orange-700">{{ degerlendirme.musteri.isim[0] }}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-900">{{ degerlendirme.musteri.isim }}</h4>
+                                        <p class="text-sm text-gray-500">{{ degerlendirme.tarih|datetime }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    {% for i in range(1, 6) %}
+                                        {% if i <= degerlendirme.puan %}
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-yellow-400"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <p class="text-gray-700">{{ degerlendirme.yorum }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

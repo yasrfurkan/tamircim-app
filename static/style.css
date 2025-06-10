@@ -1,0 +1,65 @@
+/* Custom styles to complement Tailwind CSS */
+
+section {
+    max-width: 2500px;
+    width: 90%;
+    margin: 50px auto;
+    color: black;
+}
+
+.drop {
+    display: none;
+}
+
+ul li:hover .drop {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 100%;
+}
+
+/* Tab styling */
+.tab-button.active {
+    border-bottom-width: 2px;
+    border-color: #ff5722; /* Orange-700 */
+    color: #ff5722;
+}
+
+.tab-button:not(.active) {
+    border-bottom-width: 2px;
+    border-color: transparent;
+    color: #6b7280; /* Gray-500 */
+}
+
+/* Message container */
+#message-container {
+    scroll-behavior: smooth;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.waiting {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.confirmed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.cancelled {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-badge.completed {
+    background-color: #dbeafe;
+    color: #1e40af;
+}

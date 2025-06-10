@@ -1,0 +1,120 @@
+/* Custom styles to complement Tailwind CSS */
+
+section {
+    max-width: 2500px;
+    width: 90%;
+    margin: 50px auto;
+    color: black;
+}
+
+.drop {
+    display: none;
+}
+
+ul li:hover .drop {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 100%;
+}
+
+/* Tab styling */
+.tab-button.active {
+    border-bottom-width: 2px;
+    border-color: #ff5722; /* Orange-700 */
+    color: #ff5722;
+}
+
+.tab-button:not(.active) {
+    border-bottom-width: 2px;
+    border-color: transparent;
+    color: #6b7280; /* Gray-500 */
+}
+
+/* Message container */
+#message-container {
+    scroll-behavior: smooth;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-badge.waiting {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.confirmed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.cancelled {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-badge.completed {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+/* Hero section styling */
+.hero-section {
+    background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('/static/hero-bg.svg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Button hover effects */
+.btn-orange {
+    background-color: #ff5722;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-orange:hover {
+    background-color: #e64a19;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Card hover effects */
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Form focus states */
+input:focus, select:focus, textarea:focus {
+    border-color: #ff5722;
+    box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.2);
+}
+
+/* Custom scrollbar for message container */
+#message-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#message-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#message-container::-webkit-scrollbar-thumb {
+    background: #ff5722;
+    border-radius: 10px;
+}
+
+#message-container::-webkit-scrollbar-thumb:hover {
+    background: #e64a19;
+}

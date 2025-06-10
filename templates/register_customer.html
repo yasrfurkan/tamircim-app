@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Müşteri Kaydı{% endblock %}
+
+{% block content %}
+<div class="flex justify-center py-12">
+    <div class="w-full max-w-md">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h4 class="text-xl font-semibold text-center text-gray-800">Müşteri Olarak Kayıt Ol</h4>
+            </div>
+            <div class="p-6">
+                <form method="POST" action="{{ url_for('kayit_musteri') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label for="isim" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
+                        {{ form.isim(class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="Adınızı ve soyadınızı girin") }}
+                        {% for error in form.isim.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="eposta" class="block text-sm font-medium text-gray-700 mb-1">E-posta</label>
+                        {{ form.eposta(class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="E-posta adresinizi girin") }}
+                        {% for error in form.eposta.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="telefon" class="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
+                        {{ form.telefon(class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="Telefon numaranızı girin") }}
+                        {% for error in form.telefon.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="sifre" class="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
+                        {{ form.sifre(class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="En az 6 karakter") }}
+                        {% for error in form.sifre.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="onay_sifre" class="block text-sm font-medium text-gray-700 mb-1">Şifreyi Doğrula</label>
+                        {{ form.onay_sifre(class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500", placeholder="Şifrenizi tekrar girin") }}
+                        {% for error in form.onay_sifre.errors %}
+                            <div class="mt-1 text-sm text-red-600">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-6">
+                        {{ form.submit(class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-700 hover:bg-orange-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") }}
+                    </div>
+                </form>
+                
+                <div class="mt-6 text-center space-y-2">
+                    <p class="text-sm text-gray-600">
+                        Zaten bir hesabınız var mı? 
+                        <a href="{{ url_for('login') }}" class="font-medium text-orange-600 hover:text-orange-500">Giriş Yap</a>
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        Tamirci misiniz? 
+                        <a href="{{ url_for('kayit_tamirci') }}" class="font-medium text-orange-600 hover:text-orange-500">Tamirci olarak kayıt olun</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
